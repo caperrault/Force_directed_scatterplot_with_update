@@ -124,6 +124,13 @@ var checkboxMusic = controlsMusic.append("input")
 controlsMusic.append("span")
         .text("Music");
 
+// function(createNodes) {
+//
+//
+//
+// }
+
+
 function draw(nod) {
 
   var xVar = "year",
@@ -152,10 +159,11 @@ function draw(nod) {
         .call(xAxis)
 
     var node = svg.selectAll(".node")
-            .data(nod)
-          .enter().append("g")
-             .attr("class", "displayed")
-             .on("click", function(d) {
+            .data(nod);
+
+    node.enter().append("g")
+            .attr("class", "displayed")
+            .on("click", function(d) {
                                          div.transition().duration(300).style("opacity", 1);
                                          div.html("<img src=img_med/" + d.name + ".png > <br><p style = padding-left:5px;font-weight:bold>"  + d.title + " (" + d.year + ")</p><p style = padding-left:5px;font-size:10>Fusce in nibh at nulla tincidunt auctor id sit amet dolor. Sed nec leo quam. Donec risus libero, efficitur nec urna et, vehicula tincidunt ligula. Mauris convallis in est molestie ullamcorper. Vestibulum auctor eleifend ligula, eu consequat lacus interdum mattis.</p><p style=padding-left:5px;text-decoration:underline;font-size:10;>Source</p>")
                                          .style("left", (d3.event.pageX) + "px")
@@ -163,6 +171,8 @@ function draw(nod) {
                                       })
             .on("mouseout", function (d) { div.transition().delay(1500).duration(300).style("opacity", 0);})
             .call(force.drag);
+
+    node.exit().remove();
 
     node.append("image")
           .attr("xlink:href", function(d) { return "img/" + d.name + ".jpg"; })
@@ -172,25 +182,30 @@ function draw(nod) {
           .attr("height", 30)
           .style("cursor", "pointer");
 
-          d3.select("#boxFilm").on("change", function(){
+    d3.select("#boxFilm").on("change", function(){
             if (checkboxFilm.node().checked === false) {
               node.filter(function (d) {return d.type === "film";})
-                  .attr("class", "notDisplayed")
+              // node = node.data(node.filter(function (d) {return d.type === "film";}))
+                   .attr("class", "notDisplayed");
+              //force.resume();
             }
             else {
               node.filter(function (d) {return d.type === "film";})
-                  .attr("class", "displayed")
+                   .attr("class", "displayed")
+              //force.start();
             }
           });
 
-          d3.select("#boxMusic").on("change", function(){
+     d3.select("#boxMusic").on("change", function(){
               if (checkboxMusic.node().checked === false) {
                 node.filter(function (d) {return d.type === "music";})
-                    .attr("class", "notDisplayed")
+                     .attr("class", "notDisplayed");
+              //  force.resume();
               }
               else {
                 node.filter(function (d) {return d.type === "music";})
-                    .attr("class", "displayed")
+                     .attr("class", "displayed");
+              //  force.start();
               }
           });
 
@@ -239,11 +254,27 @@ function draw(nod) {
 
 }
 
+// var extraDataTest = {
+//   yLength: 6,
+//   name: 'GrandMasterFlash',
+//   year: 1994,
+//   radius:15,
+//   type: 'music',
+//   title:'Grand Master Flash'
+// }
+
+
 d3.csv("graph2.csv", function(error, data) {
 
-draw(data);
+  draw(data);
 
+  // setTimeout(function(){
+  //   data.push(extraDataTest);
+  //   draw(data);
+  //
+  // }, 3000)
 });
+
 
 // function zoomed() {
 // svg.attr("transform", "scale(" + d3.event.scale + ")");
