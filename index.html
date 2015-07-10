@@ -184,14 +184,26 @@ d3.csv("graph2.csv", function(error, data) {
           .data(data)
         .enter().append("g")
            .attr("class", "displayed")
-           .on("mouseover", function(d) {
+           .on("click", function(d) {
                                        div.transition().duration(300).style("opacity", 1);
                                        div.html("<img src=img_med/" + d.name + ".png > <br><p style = padding-left:5px;font-weight:bold>"  + d.title + " (" + d.year + ")</p><p style = padding-left:5px;font-size:10>Fusce in nibh at nulla tincidunt auctor id sit amet dolor. Sed nec leo quam. Donec risus libero, efficitur nec urna et, vehicula tincidunt ligula. Mauris convallis in est molestie ullamcorper. Vestibulum auctor eleifend ligula, eu consequat lacus interdum mattis.</p><p style=padding-left:5px;text-decoration:underline;font-size:10;>Source</p>")
                                        .style("left", (d3.event.pageX) + "px")
-                                       .style("top", (d3.event.pageY-10) + "px")
-                                       .style("clear", "both");
-                                       })
-          .on("mouseout", function (d) { div.transition().duration(300).style("opacity", 0);})
+                                       .style("top", (d3.event.pageY-10) + "px");
+
+                                      //  d3.select(div)
+                                      //    .append("button")
+                                      //    .attr("type", "button")
+                                      //    .text("x");
+
+                                      //  div.append("div:text")
+                                      //  .text("x")
+                                      //  .attr("x", 200)
+                                      //  .attr("y", 0)
+                                      //  .on("click", function() {div.remove()});
+                                      //  .style("left", (d3.event.pageX) + "px")
+                                      //  .style("top", (d3.event.pageY-10) + "px");
+                                    })
+          .on("mouseout", function (d) { div.transition().delay(1500).duration(300).style("opacity", 0);})
           .call(force.drag);
 
       node.append("image")
@@ -203,51 +215,25 @@ d3.csv("graph2.csv", function(error, data) {
         .style("cursor", "pointer");
 
         d3.select("#boxFilm").on("change", function(){
-          node.attr("class", function(d) {
-            if (checkboxFilm.node().checked === true && checkboxMusic.node().checked === false) {
-              if (d.type === "film") {
-                return "displayed";
-              }
-              else {return "notDisplayed";}
+            if (checkboxFilm.node().checked === false) {
+              node.filter(function (d) {return d.type === "film";})
+                  .attr("class", "notDisplayed")
             }
-            else if (checkboxFilm.node().checked === false && checkboxMusic.node().checked === true) {
-                if (d.type === "film") {
-                  return "notDisplayed";
-                }
-            else {return "displayed";}
-              }
-            else if (checkboxFilm.node().checked === true && checkboxMusic.node().checked === true) {
-              if (d.type === "film") {
-                return "displayed";
-              }
+            else {
+              node.filter(function (d) {return d.type === "film";})
+                  .attr("class", "displayed")
             }
-            else {return "notDisplayed";}
-          });
-//            force.start();
         });
 
         d3.select("#boxMusic").on("change", function(){
-          node.attr("class", function(d) {
-            if (checkboxFilm.node().checked === false && checkboxMusic.node().checked === true) {
-              if (d.type === "music") {
-                return "displayed";
-              }
-              else {return "notDisplayed";}
+            if (checkboxMusic.node().checked === false) {
+              node.filter(function (d) {return d.type === "music";})
+                  .attr("class", "notDisplayed")
             }
-            else if (checkboxFilm.node().checked === true && checkboxMusic.node().checked === false) {
-              if (d.type === "music") {
-                return "notDisplayed";
-              }
-              else {return "displayed";}
+            else {
+              node.filter(function (d) {return d.type === "music";})
+                  .attr("class", "displayed")
             }
-            else if (checkboxFilm.node().checked === true && checkboxMusic.node().checked === true) {
-              if (d.type === "music") {
-                return "displayed";
-              }
-            }
-            else {return "notDisplayed";}
-          });
-      //      force.start();
         });
 
   force.start();
