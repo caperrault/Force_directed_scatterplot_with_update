@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font: 14px sans-serif;
+  background-color: #000;
+}
+
+p {
+  font-weight: 100;
+}
+
+.axis {
+  fill: #fff;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: none;
+  shape-rendering: crispEdges;
+}
+
+#controlsFilm {
+  font-size: 14px;
+  position: absolute;
+  top: 450px;
+  left: 20px;
+  color: white;
+}
+
+#controlsMusic {
+  font-size: 14px;
+  position: absolute;
+  top: 480px;
+  left: 20px;
+  color: white;
+}
+
+input {
+  margin: 4px 4px 0;
+}
+
+div.mapTooltip {
+  width: 250px;
+  position: absolute;
+  text-align: left;
+  color: white;
+  padding: 0;
+  font-size: 12px;
+  font-family: Helvetica, Arial, inherit;
+  font-weight: bold;
+  background: #444;
+  border: 0;
+  pointer-events: none;
+  display : block;
+}
+
+.displayed {
+  display: inline;
+}
+
+.displayed :hover {
+  opacity: 0.5;
+}
+
+.notDisplayed {
+  display: none;
+}
+
+</style>
+
+<body>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<script>
+
+var margin = {top: 20, right: 20, bottom: 30, left: 100},
+    width = 1200 - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom,
+    padding = 1,
+    radius = 16;
+
+// var zoom = d3.behavior.zoom()
+//         .scaleExtent([1, 10])
+//         .on("zoom", zoomed);
+
+var x = d3.scale.linear()
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 70]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("top")
+    .tickFormat(d3.format(""));
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    // .call(zoom);
+
+    x.domain([1980,2015]);
+    y.domain([0,9]);
+
+    svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0,100)")
+                .call(xAxis)
+
+var div = d3.select("body").append("div")
+              .attr("class", "mapTooltip")
+              .style("opacity", 0);
+
+var controlsFilm = d3.select("body").append("label")
+    .attr("id", "controlsFilm");
+
+var checkboxFilm = controlsFilm.append("input")
+    .attr("id", "boxFilm")
+    .attr("type", "checkbox")
+    .property("checked", true);
+controlsFilm.append("span")
+    .text("Film");
+
+var controlsMusic = d3.select("body").append("label")
+        .attr("id", "controlsMusic");
+
+var checkboxMusic = controlsMusic.append("input")
+        .attr("id", "boxMusic")
+        .attr("type", "checkbox")
+        .property("checked", true);
+controlsMusic.append("span")
+        .text("Music");
+
+var node;
+
+var data = [];
+
+// var extraDataTest = {
+//   yLength: 6,
+//   name: 'GrandMasterFlash',
+//   year: 1994,
+//   radius:15,
+//   type: 'music',
+//   title:'Grand Master Flash'
+// }
+
+d3.csv("graph2.csv", function(error, data) {
+
+  var filmData = data.filter(function (d) {return d.type === "film";});
+  var musicData = data.filter(function (d) {return d.type === "music";});
+
+  d3.select("#boxFilm").on("change", function(){
+          if (checkboxFilm.node().checked) {
+            data = data.filter(function (d) {return d.type === "film";})
+            // node = node.data(node.filter(function (d) {return d.type === "film";}))
+            //     .attr("class", "notDisplayed");
+            //force.resume();
+            console.log(data)
+            draw(data);
+          }
+          else {
+            data = data.filter(function (d) {return d.type === "film";})
+                       .remove()
+            // node.filter(function (d) {return d.type === "film";})
+            //      .attr("class", "displayed")
+            //force.start();
+            draw(data);
+          }
+        });
+
+   d3.select("#boxMusic").on("change", function(){
+            if (checkboxMusic.node().checked) {
+              data = data.filter(function (d) {return d.type === "music";})
+            //     .attr("class", "notDisplayed");
+            //  force.resume();
+            draw(data);
+            }
+            else {
+              data = data.filter(function (d) {return d.type === "music";})
+              .remove()
+              //     .attr("class", "displayed");
+            //  force.start();
+            draw(data);
+            }
+        });
+
+  // setTimeout(function(){
+  //   data.push(extraDataTest);
+  //   draw(data);
+  //
+  // }, 3000)
+
+//draw(data);
+
+});
+
+
+
+  function draw(nod) {
+
+            var xVar = "year",
+                yVar = "yLength";
+
+            var force = d3.layout.force()
+              .nodes(nod)
+              .size([width, height])
+              .on("tick", tick)
+              .charge(-0.01)
+              .gravity(0);
+
+              // Set initial positions
+              nod.forEach(function(d) {
+                // d.x = x(d[xVar]);
+                // d.y = y(d[yVar-1]);
+                d.radius = radius;
+              });
+
+              var node = svg.selectAll(".node")
+                      .data(nod);
+
+              node.enter().append("g")
+                      .attr("class", "displayed")
+                      .on("click", function(d) {
+                                                   div.transition().duration(300).style("opacity", 1);
+                                                   div.html("<img src=img_med/" + d.name + ".png > <br><p style = padding-left:5px;font-weight:bold>"  + d.title + " (" + d.year + ")</p><p style = padding-left:5px;font-size:10>Fusce in nibh at nulla tincidunt auctor id sit amet dolor. Sed nec leo quam. Donec risus libero, efficitur nec urna et, vehicula tincidunt ligula. Mauris convallis in est molestie ullamcorper. Vestibulum auctor eleifend ligula, eu consequat lacus interdum mattis.</p><p style=padding-left:5px;text-decoration:underline;font-size:10;>Source</p>")
+                                                   .style("left", (d3.event.pageX) + "px")
+                                                   .style("top", (d3.event.pageY-10) + "px");
+                                                })
+                      .on("mouseout", function (d) { div.transition().delay(1500).duration(300).style("opacity", 0);})
+                      .call(force.drag);
+
+              node.exit().remove();
+
+              node.append("image")
+                    .attr("xlink:href", function(d) { return "img/" + d.name + ".jpg"; })
+                    .attr("x", -8)
+                    .attr("y", -8)
+                    .attr("width", 30)
+                    .attr("height", 30)
+                    .style("cursor", "pointer");
+
+          force.start();
+
+          function tick(e) {
+            node.each(moveTowardDataPosition(e.alpha));
+            node.each(collide(e.alpha));
+            node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+          }
+
+          function moveTowardDataPosition(alpha) {
+            return function(d) {
+              d.x += (x(d[xVar]) - d.x) * 0.1 * alpha;
+              d.y += (y(d[yVar]) - d.y) * 0.1 * alpha;
+            };
+          }
+
+          // Resolve collisions between nodes.
+          function collide(alpha) {
+            var quadtree = d3.geom.quadtree(nod);
+            return function(d) {
+              var r = d.radius + radius + padding,
+                  nx1 = d.x - r,
+                  nx2 = d.x + r,
+                  ny1 = d.y - r,
+                  ny2 = d.y + r;
+              quadtree.visit(function(quad, x1, y1, x2, y2) {
+                if (quad.point && (quad.point !== d)) {
+                  var x = d.x - quad.point.x,
+                      y = d.y - quad.point.y,
+                      l = Math.sqrt(x * x + y * y),
+                      r = d.radius + quad.point.radius + padding;
+                  if (l < r) {
+                    l = (l - r) / l * alpha;
+                    d.x -= x *= l;
+                    d.y -= y *= l;
+                    quad.point.x += x;
+                    quad.point.y += y;
+                  }
+                }
+                return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+              });
+            };
+          }
+  }
+
+// function zoomed() {
+// svg.attr("transform", "scale(" + d3.event.scale + ")");
+// }
+
+</script>

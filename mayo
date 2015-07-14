@@ -1,0 +1,121 @@
+var width = 700,
+height = 600,
+padding = 20;
+
+var start = new Date(2013,0,1),
+end = new Date(2013,11,31)
+
+var data = []
+
+for (i=0; i < 50; i++) {
+var point = {}
+
+var year = 2013;
+var month = Math.floor(Math.random()*12)
+var day = Math.floor(Math.random()*28)
+
+point.date = new Date(year, month, day)
+point.mIndex = i
+data.push(point)
+}
+
+var force = d3.layout.force()
+.nodes(JSON.parse(JSON.stringify(data)))
+.size([width - padding, height - 100])
+.on("tick", tick)
+.start()
+
+var svg = d3.select("body").append("svg")
+.attr({
+  "width": width,
+  "height": height
+})
+
+//build stuff
+var x = d3.time.scale()
+.domain([start, end])
+.range([padding, width - 6*padding])
+.clamp(true)
+
+var xAxis = d3.svg.axis()
+.scale(x)
+.tickSize(0)
+.tickPadding(20)
+//.tickFormat(d3.time.format("%x"))
+
+var brush = d3.svg.brush()
+.x(x)
+.extent([start, end])
+.on("brush", brushed)
+
+//append stuff
+var slidercontainer = svg.append("g")
+.attr("transform", "translate(100, 500)")
+
+var axis = slidercontainer.append("g")
+.call(xAxis)
+
+var slider = slidercontainer.append("g")
+.call(brush)
+.classed("slider", true)
+
+//manipulate stuff
+d3.selectAll(".resize").append("circle")
+.attr("cx", 0)
+.attr("cy", 0)
+.attr("r", 10)
+.attr("fill", "Red")
+.classed("handle", true)
+
+d3.select(".domain")
+.select(function() {return this.parentNode.appendChild(this.cloneNode(true))})
+.classed("halo", true)
+
+function brushed() {
+data.forEach(function(d, i) {
+        var idx = -1;
+        force.nodes().forEach(function(node, j) {
+            if(node.mIndex == d.mIndex) {
+                idx = j;
+            }
+        });
+  //if data point in range (between extent 0 and 1)
+  if (d.date >= brush.extent()[0] && d.date <= brush.extent()[1]) {
+    if (idx == -1) {
+      force.nodes().push(d)
+    }
+  }
+  else if(idx > -1) {
+    force.nodes().splice(idx, 1)
+  }
+})
+
+
+
+d3.select("#nodeCount").text(force.nodes().length);
+
+    force.start();
+}
+
+function tick() {
+var nodes = svg.selectAll(".node")
+        .data(force.nodes(), function(d) { return d.mIndex; })
+
+nodes
+  .attr("cx", function(d) {return d.x})
+  .attr("cy", function(d) {return d.y})
+
+nodes
+  .enter()
+            .append("circle")
+      .attr("r", 10)
+      .attr("fill", "Red")
+      .call(force.drag)
+      .attr("class", "node")
+    .attr("cx", function(d) {return d.x})
+    .attr("cy", function(d) {return d.y})
+
+nodes
+  .exit()
+    .remove()
+}

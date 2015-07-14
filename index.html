@@ -70,8 +70,11 @@ div.mapTooltip {
 }
 
 </style>
+
 <body>
+
 <script src="http://d3js.org/d3.v3.min.js"></script>
+
 <script>
 
 var margin = {top: 20, right: 20, bottom: 30, left: 100},
@@ -108,6 +111,7 @@ var div = d3.select("body").append("div")
 
 var controlsFilm = d3.select("body").append("label")
     .attr("id", "controlsFilm");
+
 var checkboxFilm = controlsFilm.append("input")
     .attr("id", "boxFilm")
     .attr("type", "checkbox")
@@ -117,6 +121,7 @@ controlsFilm.append("span")
 
 var controlsMusic = d3.select("body").append("label")
         .attr("id", "controlsMusic");
+
 var checkboxMusic = controlsMusic.append("input")
         .attr("id", "boxMusic")
         .attr("type", "checkbox")
@@ -124,94 +129,72 @@ var checkboxMusic = controlsMusic.append("input")
 controlsMusic.append("span")
         .text("Music");
 
-// function(createNodes) {
-//
-//
-//
-// }
-
-
 function draw(nod) {
 
-  var xVar = "year",
-      yVar = "yLength";
 
-  var force = d3.layout.force()
-    .nodes(nod)
-    .size([width, height])
-    .on("tick", tick)
-    .charge(-0.01)
-    .gravity(0);
+    //  d3.select("#boxMusic").on("change", function(){
+    //           if (checkboxMusic.node().checked === false) {
+    //             node.filter(function (d) {return d.type === "music";})
+    //                  .attr("class", "notDisplayed");
+    //           //  force.resume();
+    //           }
+    //           else {
+    //             node.filter(function (d) {return d.type === "music";})
+    //                  .attr("class", "displayed");
+    //           //  force.start();
+    //           }
+    //       });
 
-    x.domain([1980,2015]);
-    y.domain([0,9]);
+          var xVar = "year",
+              yVar = "yLength";
 
-    // Set initial positions
-    nod.forEach(function(d) {
-      // d.x = x(d[xVar]);
-      // d.y = y(d[yVar-1]);
-      d.radius = radius;
-    });
+          var force = d3.layout.force()
+            .nodes(nod)
+            .size([width, height])
+            .on("tick", tick)
+            .charge(-0.01)
+            .gravity(0)
+            .start();
 
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0,100)")
-        .call(xAxis)
 
-    var node = svg.selectAll(".node")
-            .data(nod);
+            x.domain([1980,2015]);
+            y.domain([0,9]);
 
-    node.enter().append("g")
-            .attr("class", "displayed")
-            .on("click", function(d) {
-                                         div.transition().duration(300).style("opacity", 1);
-                                         div.html("<img src=img_med/" + d.name + ".png > <br><p style = padding-left:5px;font-weight:bold>"  + d.title + " (" + d.year + ")</p><p style = padding-left:5px;font-size:10>Fusce in nibh at nulla tincidunt auctor id sit amet dolor. Sed nec leo quam. Donec risus libero, efficitur nec urna et, vehicula tincidunt ligula. Mauris convallis in est molestie ullamcorper. Vestibulum auctor eleifend ligula, eu consequat lacus interdum mattis.</p><p style=padding-left:5px;text-decoration:underline;font-size:10;>Source</p>")
-                                         .style("left", (d3.event.pageX) + "px")
-                                         .style("top", (d3.event.pageY-10) + "px");
-                                      })
-            .on("mouseout", function (d) { div.transition().delay(1500).duration(300).style("opacity", 0);})
-            .call(force.drag);
+            // Set initial positions
+            nod.forEach(function(d) {
+              // d.x = x(d[xVar]);
+              // d.y = y(d[yVar-1]);
+              d.radius = radius;
+            });
 
-    node.exit().remove();
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0,100)")
+                .call(xAxis)
 
-    node.append("image")
-          .attr("xlink:href", function(d) { return "img/" + d.name + ".jpg"; })
-          .attr("x", -8)
-          .attr("y", -8)
-          .attr("width", 30)
-          .attr("height", 30)
-          .style("cursor", "pointer");
+            var node = svg.selectAll(".node")
+                          .data(nod);
 
-    d3.select("#boxFilm").on("change", function(){
-            if (checkboxFilm.node().checked === false) {
-              node.filter(function (d) {return d.type === "film";})
-              // node = node.data(node.filter(function (d) {return d.type === "film";}))
-                   .attr("class", "notDisplayed");
-              //force.resume();
-            }
-            else {
-              node.filter(function (d) {return d.type === "film";})
-                   .attr("class", "displayed")
-              //force.start();
-            }
-          });
+            var newNode = node.enter().append("image")
+                              .attr("xlink:href", function(d) { return "img/" + d.name + ".jpg"; })
+                              .attr("x", -8)
+                              .attr("y", -8)
+                              .attr("width", 30)
+                              .attr("height", 30)
+                              .style("cursor", "pointer")
+                              .on("click", function(d) {
+                                                 div.transition().duration(300).style("opacity", 1);
+                                                 div.html("<img src=img_med/" + d.name + ".png > <br><p style = padding-left:5px;font-weight:bold>"  + d.title + " (" + d.year + ")</p><p style = padding-left:5px;font-size:10>Fusce in nibh at nulla tincidunt auctor id sit amet dolor. Sed nec leo quam. Donec risus libero, efficitur nec urna et, vehicula tincidunt ligula. Mauris convallis in est molestie ullamcorper. Vestibulum auctor eleifend ligula, eu consequat lacus interdum mattis.</p><p style=padding-left:5px;text-decoration:underline;font-size:10;>Source</p>")
+                                                 .style("left", (d3.event.pageX) + "px")
+                                                 .style("top", (d3.event.pageY-10) + "px");
+                                              })
+                              .on("mouseout", function (d) { div.transition().delay(1500).duration(300).style("opacity", 0);})
+                              .call(force.drag);
 
-     d3.select("#boxMusic").on("change", function(){
-              if (checkboxMusic.node().checked === false) {
-                node.filter(function (d) {return d.type === "music";})
-                     .attr("class", "notDisplayed");
-              //  force.resume();
-              }
-              else {
-                node.filter(function (d) {return d.type === "music";})
-                     .attr("class", "displayed");
-              //  force.start();
-              }
-          });
-
-        force.start();
+            node.exit().remove();
 
         function tick(e) {
+        //  node.exit().remove();
           node.each(moveTowardDataPosition(e.alpha));
           node.each(collide(e.alpha));
           node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
@@ -251,30 +234,54 @@ function draw(nod) {
             });
           };
         }
-
 }
-
-// var extraDataTest = {
-//   yLength: 6,
-//   name: 'GrandMasterFlash',
-//   year: 1994,
-//   radius:15,
-//   type: 'music',
-//   title:'Grand Master Flash'
-// }
-
 
 d3.csv("graph2.csv", function(error, data) {
 
-  draw(data);
+  console.log(data);
 
-  // setTimeout(function(){
-  //   data.push(extraDataTest);
-  //   draw(data);
-  //
-  // }, 3000)
+  var musicData = data.filter(function(d, i) { return d.type === 'music' })
+    , filmData = data.filter(function(d, i) { return d.type === 'film' })
+
+  function update() {
+
+    var film = checkboxFilm.node().checked
+      , music = checkboxMusic.node().checked
+      , list = [];
+
+    if (film) {
+      console.log('film!')
+      list = list.concat(filmData);
+    }
+    if (music) {
+      console.log('music!')
+      list = list.concat(musicData);
+    }
+
+    console.log(list);
+
+    draw(list);
+  }
+
+  d3.select("#controlsFilm").on("change", update);
+  d3.select("#controlsMusic").on("change", update);
+          // if (checkboxFilm.node().checked === false) {
+            // node.filter(function (d) {return d.type === "film";})
+            // node = node.data(node.filter(function (d) {return d.type === "film";}))
+                //  .attr("class", "notDisplayed");
+            //force.resume();
+          //   draw()
+          // }
+          // else {
+          //   node.filter(function (d) {return d.type === "film";})
+          //        .attr("class", "displayed")
+          //   //force.start();
+          // }
+    // });
+
+  draw(musicData.concat(filmData));
+
 });
-
 
 // function zoomed() {
 // svg.attr("transform", "scale(" + d3.event.scale + ")");
