@@ -11,6 +11,10 @@ p {
   font-weight: 100;
 }
 
+.dot {
+  fill:red;
+}
+
 .axis {
   fill: #fff;
 }
@@ -129,53 +133,43 @@ var checkboxMusic = controlsMusic.append("input")
 controlsMusic.append("span")
         .text("Music");
 
-function draw(nod) {
+x.domain([1980,2015]);
+y.domain([0,9]);
 
+svg.append("g")
+   .attr("class", "x axis")
+   .attr("transform", "translate(0,100)")
+   .call(xAxis)
 
-    //  d3.select("#boxMusic").on("change", function(){
-    //           if (checkboxMusic.node().checked === false) {
-    //             node.filter(function (d) {return d.type === "music";})
-    //                  .attr("class", "notDisplayed");
-    //           //  force.resume();
-    //           }
-    //           else {
-    //             node.filter(function (d) {return d.type === "music";})
-    //                  .attr("class", "displayed");
-    //           //  force.start();
-    //           }
-    //       });
+var xVar = "year",
+    yVar = "yLength",
+    node;
 
-          var xVar = "year",
-              yVar = "yLength";
+function draw(nodes) {
 
           var force = d3.layout.force()
-            .nodes(nod)
+            .nodes(nodes)
             .size([width, height])
             .on("tick", tick)
             .charge(-0.01)
             .gravity(0)
             .start();
 
-
-            x.domain([1980,2015]);
-            y.domain([0,9]);
-
             // Set initial positions
-            nod.forEach(function(d) {
+          nodes.forEach(function(d) {
               // d.x = x(d[xVar]);
               // d.y = y(d[yVar-1]);
               d.radius = radius;
             });
 
-            svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0,100)")
-                .call(xAxis)
+          var node = svg.selectAll(".node")
+              node = node.data(nodes);
 
-            var node = svg.selectAll(".node")
-                          .data(nod);
+              node.enter().append("g")
+                  .attr("class", "node")
+                  .call(force.drag);
 
-            var newNode = node.enter().append("image")
+            node.append("image")
                               .attr("xlink:href", function(d) { return "img/" + d.name + ".jpg"; })
                               .attr("x", -8)
                               .attr("y", -8)
@@ -188,10 +182,28 @@ function draw(nod) {
                                                  .style("left", (d3.event.pageX) + "px")
                                                  .style("top", (d3.event.pageY-10) + "px");
                                               })
-                              .on("mouseout", function (d) { div.transition().delay(1500).duration(300).style("opacity", 0);})
-                              .call(force.drag);
+                              .on("mouseout", function (d) { div.transition().delay(1500).duration(300).style("opacity", 0);});
+                            //  .call(force.drag);
 
-            node.exit().remove();
+
+            // var node = svg.selectAll(".dot")
+            //           .data(nodes)
+            //
+            //         node.enter().append("circle")
+            //           .attr("class", "dot")
+            //           .attr("r", radius)
+            //           .style("cursor", "pointer")
+            //           .on("click", function(d) {
+            //                                                div.transition().duration(300).style("opacity", 1);
+            //                                                div.html("<img src=img_med/" + d.name + ".png > <br><p style = padding-left:5px;font-weight:bold>"  + d.title + " (" + d.year + ")</p><p style = padding-left:5px;font-size:10>Fusce in nibh at nulla tincidunt auctor id sit amet dolor. Sed nec leo quam. Donec risus libero, efficitur nec urna et, vehicula tincidunt ligula. Mauris convallis in est molestie ullamcorper. Vestibulum auctor eleifend ligula, eu consequat lacus interdum mattis.</p><p style=padding-left:5px;text-decoration:underline;font-size:10;>Source</p>")
+            //                                                .style("left", (d3.event.pageX) + "px")
+            //                                                .style("top", (d3.event.pageY-10) + "px");
+            //                                             })
+            //           .on("mouseout", function (d) { div.transition().delay(1500).duration(300).style("opacity", 0);})
+            //           .call(force.drag);
+
+
+        node.exit().remove();
 
         function tick(e) {
         //  node.exit().remove();
@@ -209,7 +221,7 @@ function draw(nod) {
 
         // Resolve collisions between nodes.
         function collide(alpha) {
-          var quadtree = d3.geom.quadtree(nod);
+          var quadtree = d3.geom.quadtree(nodes);
           return function(d) {
             var r = d.radius + radius + padding,
                 nx1 = d.x - r,
@@ -255,7 +267,7 @@ d3.csv("graph2.csv", function(error, data) {
     }
     if (music) {
       console.log('music!')
-      list = list.concat(musicData);
+      list = list.concat(musicData)
     }
 
     console.log(list);
@@ -265,19 +277,6 @@ d3.csv("graph2.csv", function(error, data) {
 
   d3.select("#controlsFilm").on("change", update);
   d3.select("#controlsMusic").on("change", update);
-          // if (checkboxFilm.node().checked === false) {
-            // node.filter(function (d) {return d.type === "film";})
-            // node = node.data(node.filter(function (d) {return d.type === "film";}))
-                //  .attr("class", "notDisplayed");
-            //force.resume();
-          //   draw()
-          // }
-          // else {
-          //   node.filter(function (d) {return d.type === "film";})
-          //        .attr("class", "displayed")
-          //   //force.start();
-          // }
-    // });
 
   draw(musicData.concat(filmData));
 
