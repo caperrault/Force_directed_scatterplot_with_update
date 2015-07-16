@@ -11,10 +11,6 @@ p {
   font-weight: 100;
 }
 
-.dot {
-  fill:red;
-}
-
 .axis {
   fill: #fff;
 }
@@ -163,50 +159,30 @@ function draw(nodes) {
             });
 
           var node = svg.selectAll(".node")
-              node = node.data(nodes);
+                        .data(nodes);
 
-              node.enter().append("g")
+          node.enter().append("g")
                   .attr("class", "node")
                   .call(force.drag);
 
-            node.append("image")
-                              .attr("xlink:href", function(d) { return "img/" + d.name + ".jpg"; })
-                              .attr("x", -8)
-                              .attr("y", -8)
-                              .attr("width", 30)
-                              .attr("height", 30)
-                              .style("cursor", "pointer")
-                              .on("click", function(d) {
-                                                 div.transition().duration(300).style("opacity", 1);
-                                                 div.html("<img src=img_med/" + d.name + ".png > <br><p style = padding-left:5px;font-weight:bold>"  + d.title + " (" + d.year + ")</p><p style = padding-left:5px;font-size:10>Fusce in nibh at nulla tincidunt auctor id sit amet dolor. Sed nec leo quam. Donec risus libero, efficitur nec urna et, vehicula tincidunt ligula. Mauris convallis in est molestie ullamcorper. Vestibulum auctor eleifend ligula, eu consequat lacus interdum mattis.</p><p style=padding-left:5px;text-decoration:underline;font-size:10;>Source</p>")
-                                                 .style("left", (d3.event.pageX) + "px")
-                                                 .style("top", (d3.event.pageY-10) + "px");
-                                              })
-                              .on("mouseout", function (d) { div.transition().delay(1500).duration(300).style("opacity", 0);});
-                            //  .call(force.drag);
-
-
-            // var node = svg.selectAll(".dot")
-            //           .data(nodes)
-            //
-            //         node.enter().append("circle")
-            //           .attr("class", "dot")
-            //           .attr("r", radius)
-            //           .style("cursor", "pointer")
-            //           .on("click", function(d) {
-            //                                                div.transition().duration(300).style("opacity", 1);
-            //                                                div.html("<img src=img_med/" + d.name + ".png > <br><p style = padding-left:5px;font-weight:bold>"  + d.title + " (" + d.year + ")</p><p style = padding-left:5px;font-size:10>Fusce in nibh at nulla tincidunt auctor id sit amet dolor. Sed nec leo quam. Donec risus libero, efficitur nec urna et, vehicula tincidunt ligula. Mauris convallis in est molestie ullamcorper. Vestibulum auctor eleifend ligula, eu consequat lacus interdum mattis.</p><p style=padding-left:5px;text-decoration:underline;font-size:10;>Source</p>")
-            //                                                .style("left", (d3.event.pageX) + "px")
-            //                                                .style("top", (d3.event.pageY-10) + "px");
-            //                                             })
-            //           .on("mouseout", function (d) { div.transition().delay(1500).duration(300).style("opacity", 0);})
-            //           .call(force.drag);
-
+          node.append("image")
+              .attr("xlink:href", function(d) { return "img/" + d.name + ".jpg"; })
+              .attr("x", -8)
+              .attr("y", -8)
+              .attr("width", 30)
+              .attr("height", 30)
+              .style("cursor", "pointer")
+              .on("click", function(d) {
+                                 div.transition().duration(300).style("opacity", 1);
+                                 div.html("<img src=img_med/" + d.name + ".png > <br><p style = padding-left:5px;font-weight:bold>"  + d.title + " (" + d.year + ")</p><p style = padding-left:5px;font-size:10>Fusce in nibh at nulla tincidunt auctor id sit amet dolor. Sed nec leo quam. Donec risus libero, efficitur nec urna et, vehicula tincidunt ligula. Mauris convallis in est molestie ullamcorper. Vestibulum auctor eleifend ligula, eu consequat lacus interdum mattis.</p><p style=padding-left:5px;text-decoration:underline;font-size:10;>Source</p>")
+                                 .style("left", (d3.event.pageX) + "px")
+                                 .style("top", (d3.event.pageY-10) + "px");
+                              })
+              .on("mouseout", function (d) { div.transition().delay(1500).duration(300).style("opacity", 0);});
 
         node.exit().remove();
 
         function tick(e) {
-        //  node.exit().remove();
           node.each(moveTowardDataPosition(e.alpha));
           node.each(collide(e.alpha));
           node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
