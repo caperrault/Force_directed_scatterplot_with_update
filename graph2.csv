@@ -4,6 +4,14 @@ yLength,name,year,radius,type,title
 6,badReligion,1982,15,music,Bad Religion
 6,deadKennedys,1981,15,film,The Dead Kennedys
 6,u2,1991,15,film,U2
+6,amyWinehouse,2006,15,tv,Amy Winehouse
+6,eminem,2002,15,film,Eminem
+6,radiohead,2007,15,film,Radiohead
+6,kanye,2008,15,music,Kanye
+6,arcadeFire,2010,15,music,Arcade Fire
+6,asapLanaDelRey,2012,15,film,A$AP + Lana Del Rey
+6,pharrell,2014,15,music,Pharrell
+6,macklemore,2012,15,film,Macklemore
 6,bruceSpringsteen,1984,15,music,Bruce Springsteen
 6,michaelJackson,1982,15,music,Michael Jackson
 6,publicEnemy,1989,15,music,Public Enemy
@@ -12,16 +20,8 @@ yLength,name,year,radius,type,title
 6,rem,1991,15,music,REM
 6,michaelJackson2,1991,15,music,Michael Jackson
 6,spiceGirls,1995,15,music,The Spice Girls
-6,greenDay,1994,15,film,Green Day
+6,greenDay,1994,15,tv,Green Day
 6,aerosmith,1993,15,film,Aerosmith
 6,britneySpears,1990,15,music,Britney Spears
 6,mariahCarey,1997,15,music,Mariah Carey
 6,ladyGaga,2008,15,music,Lady Gaga
-6,amyWinehouse,2006,15,film,Amy Winehouse
-6,eminem,2002,15,film,Eminem
-6,radiohead,2007,15,film,Radiohead
-6,kanye,2008,15,music,Kanye
-6,arcadeFire,2010,15,music,Arcade Fire
-6,asapLanaDelRey,2012,15,film,A$AP + Lana Del Rey
-6,pharrell,2014,15,music,Pharrell
-6,macklemore,2012,15,film,Macklemore
